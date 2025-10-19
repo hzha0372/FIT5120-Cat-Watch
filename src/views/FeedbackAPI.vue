@@ -2,34 +2,36 @@
   <div style="width: 900px; margin: 50px auto">
     <h2 style="margin-bottom: 20px; text-align: center">Feedbacks</h2>
 
-    <!-- 新增 Feedback 表单 -->
+    <!-- Feedback Form -->
     <form @submit.prevent="submitFeedback" class="program-form">
       <div class="form-row">
-        <label>Participant Name:</label>
-        <input type="text" v-model="newFeedback.participantName" />
+        <label for="participantName">Participant Name:</label>
+        <input id="participantName" type="text" v-model="newFeedback.participantName" />
       </div>
-      <p v-if="participantNameError" class="error-text">{{ participantNameError }}</p>
+      <p v-if="participantNameError" class="error-text" aria-live="polite">
+        {{ participantNameError }}
+      </p>
 
       <div class="form-row">
-        <label>Program Name:</label>
-        <input type="text" v-model="newFeedback.programName" />
+        <label for="programName">Program Name:</label>
+        <input id="programName" type="text" v-model="newFeedback.programName" />
       </div>
-      <p v-if="programNameError" class="error-text">{{ programNameError }}</p>
+      <p v-if="programNameError" class="error-text" aria-live="polite">{{ programNameError }}</p>
 
       <div class="form-row">
-        <label>Rating:</label>
-        <select v-model="newFeedback.rating">
-          <option value="" disabled></option>
+        <label for="rating">Rating:</label>
+        <select id="rating" v-model="newFeedback.rating">
+          <option value="" disabled>Select rating</option>
           <option v-for="n in 5" :key="n" :value="n">{{ n }}</option>
         </select>
       </div>
-      <p v-if="ratingError" class="error-text">{{ ratingError }}</p>
+      <p v-if="ratingError" class="error-text" aria-live="polite">{{ ratingError }}</p>
 
       <div class="form-row">
-        <label>Feedback:</label>
-        <input type="text" v-model="newFeedback.feedback" />
+        <label for="feedbackText">Feedback:</label>
+        <input id="feedbackText" type="text" v-model="newFeedback.feedback" />
       </div>
-      <p v-if="feedbackError" class="error-text">{{ feedbackError }}</p>
+      <p v-if="feedbackError" class="error-text" aria-live="polite">{{ feedbackError }}</p>
 
       <div style="text-align: center">
         <button type="submit" class="submit-btn">Add Feedback</button>
@@ -45,11 +47,23 @@
       sortMode="single"
       class="p-datatable-gridlines"
       ref="dt"
+      aria-label="Feedbacks table"
     >
       <template #header>
         <div class="text-end pb-4">
-          <Button icon="pi pi-external-link" label="Export CSV" @click="exportCSV" class="mr-2" />
-          <Button icon="pi pi-file-pdf" label="Export PDF" @click="exportPDF" />
+          <Button
+            icon="pi pi-external-link"
+            label="Export CSV"
+            @click="exportCSV"
+            class="mr-2"
+            aria-label="Export CSV"
+          />
+          <Button
+            icon="pi pi-file-pdf"
+            label="Export PDF"
+            @click="exportPDF"
+            aria-label="Export PDF"
+          />
         </div>
       </template>
 
@@ -60,6 +74,7 @@
             @input="applyFilters"
             placeholder="Search"
             class="p-column-filter"
+            aria-label="Search Participant Name"
           />
         </template>
       </Column>
@@ -71,6 +86,7 @@
             @input="applyFilters"
             placeholder="Search"
             class="p-column-filter"
+            aria-label="Search Program Name"
           />
         </template>
       </Column>
@@ -82,6 +98,7 @@
             @input="applyFilters"
             placeholder="Search"
             class="p-column-filter"
+            aria-label="Search Rating"
           />
         </template>
       </Column>
@@ -93,10 +110,17 @@
             @input="applyFilters"
             placeholder="Search"
             class="p-column-filter"
+            aria-label="Search Feedback"
           />
         </template>
       </Column>
     </DataTable>
+
+    <!-- 📊 Firestore D3 Bar Chart -->
+    <div style="margin-top: 40px">
+      <h3 style="text-align: center; margin-bottom: 16px">Average Rating by Program</h3>
+      <FirestoreBarChart ref="chartRef" />
+    </div>
   </div>
 </template>
 
@@ -108,56 +132,52 @@ import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
+import FirestoreBarChart from '@/components/FirestoreBarChart.vue' // ✅ 导入图表组件
 
-// ---------------- State ----------------
+// 🔹 数据与状态
 const feedbacks = ref([])
 const newFeedback = ref({ participantName: '', programName: '', rating: '', feedback: '' })
-
 const participantNameError = ref('')
 const programNameError = ref('')
 const ratingError = ref('')
 const feedbackError = ref('')
+const chartRef = ref(null) // ✅ 图表组件引用
 
-// 搜索
+// 🔹 过滤逻辑
 const filters = reactive({ participantName: '', programName: '', rating: '', feedback: '' })
-const filteredFeedbacks = computed(() => {
-  return feedbacks.value.filter((f) => {
-    return (
+const filteredFeedbacks = computed(() =>
+  feedbacks.value.filter(
+    (f) =>
       (!filters.participantName ||
         f.participantName.toLowerCase().includes(filters.participantName.toLowerCase())) &&
       (!filters.programName ||
         f.programName.toLowerCase().includes(filters.programName.toLowerCase())) &&
       (!filters.rating || f.rating.toString().includes(filters.rating)) &&
-      (!filters.feedback || f.feedback.toLowerCase().includes(filters.feedback.toLowerCase()))
-    )
-  })
-})
+      (!filters.feedback || f.feedback.toLowerCase().includes(filters.feedback.toLowerCase())),
+  ),
+)
 
-// ---------------- Functions ----------------
+// 🔹 获取反馈
 const fetchFeedbacks = async () => {
   try {
     const res = await fetch(
       'https://us-central1-fit5032-assignment-27178.cloudfunctions.net/getFeedbacks',
     )
-    const data = await res.json()
-    feedbacks.value = data
+    feedbacks.value = await res.json()
   } catch (err) {
     console.error('Failed to fetch feedbacks:', err)
   }
 }
 
+// 🔹 提交反馈
 const submitFeedback = async () => {
-  participantNameError.value = ''
-  programNameError.value = ''
-  ratingError.value = ''
-  feedbackError.value = ''
+  participantNameError.value = programNameError.value = ratingError.value = feedbackError.value = ''
 
   if (!newFeedback.value.participantName.trim())
     participantNameError.value = 'Participant Name is required.'
   if (!newFeedback.value.programName.trim()) programNameError.value = 'Program Name is required.'
   if (!newFeedback.value.rating.toString().trim()) ratingError.value = 'Rating is required.'
   if (!newFeedback.value.feedback.trim()) feedbackError.value = 'Feedback is required.'
-
   if (
     participantNameError.value ||
     programNameError.value ||
@@ -173,21 +193,17 @@ const submitFeedback = async () => {
       body: JSON.stringify(newFeedback.value),
     })
     newFeedback.value = { participantName: '', programName: '', rating: '', feedback: '' }
-    await fetchFeedbacks()
+    await fetchFeedbacks() // ✅ 刷新 DataTable
+    await chartRef.value?.loadData() // ✅ 刷新 D3 图表
   } catch (err) {
     console.error('Failed to add feedback:', err)
   }
 }
 
+// 🔹 导出相关
 const applyFilters = () => {}
-
-// ---------------- Export Functions ----------------
 const dt = ref(null)
-
-const exportCSV = () => {
-  dt.value.exportCSV()
-}
-
+const exportCSV = () => dt.value.exportCSV()
 const exportPDF = () => {
   const doc = new jsPDF()
   doc.text('Feedbacks Report', 14, 10)
@@ -201,7 +217,6 @@ const exportPDF = () => {
     ]),
     startY: 20,
   })
-
   doc.save('feedbacks.pdf')
 }
 
@@ -240,7 +255,7 @@ onMounted(fetchFeedbacks)
   margin-top: 10px;
   padding: 8px 24px;
   background-color: #007bff;
-  color: white;
+  color: #fff;
   border: none;
   border-radius: 4px;
   cursor: pointer;

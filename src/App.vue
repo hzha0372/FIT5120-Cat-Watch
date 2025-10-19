@@ -2,63 +2,82 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import isAuthenticated from '@/authenticate'
+
 const router = useRouter()
 const logout = () => {
   isAuthenticated.value = false
-  router.push('/Firelogin')
+  router.push('/FireLogin')
 }
 </script>
-<template>
-  <div style="text-align: center">
-    <nav class="navbar bg-light px-3">
-      <a class="navbar-brand">Youth Mental Health</a>
-      <div>
-        <router-link to="/" class="nav-link d-inline">Home</router-link>
-        &nbsp;&nbsp;&nbsp;
-        <router-link to="/login" class="nav-link d-inline">Login</router-link>
-        &nbsp;&nbsp;&nbsp;
-        <router-link to="/FireLogin" class="nav-link d-inline">Firebase Login</router-link>
-        &nbsp;&nbsp;&nbsp;
-        <router-link to="/FireRegister" class="nav-link d-inline">Firebase Register</router-link>
-        &nbsp;&nbsp;&nbsp;
-        <button v-if="isAuthenticated" class="nav-link" @click="logout">Logout</button>
 
-        <router-link to="/ProgramAPI" class="nav-link d-inline">ProgramAPI</router-link>
-        &nbsp;&nbsp;&nbsp;
-        <router-link to="/FeedbackAPI" class="nav-link d-inline">FeedbackAPI</router-link>
-      </div>
-    </nav>
-    <div style="margin-top: 20px">
-      <router-view></router-view>
-    </div>
+<template>
+  <div>
+    <!-- Navbar -->
+    <header class="navbar bg-light px-3" role="navigation" aria-label="Main navigation">
+      <a class="navbar-brand">Youth Mental Health</a>
+      <nav class="nav-links">
+        <router-link to="/" class="nav-link">Home</router-link>
+        <router-link to="/FireLogin" class="nav-link">Firebase Login</router-link>
+        <router-link to="/FireRegister" class="nav-link">Firebase Register</router-link>
+        <button v-if="isAuthenticated" class="nav-link" @click="logout">Logout</button>
+        <router-link to="/BulkEmail" class="nav-link">Bulk Email</router-link>
+        <router-link to="/FeedbackAPI" class="nav-link">FeedbackAPI</router-link>
+        <router-link to="/GeminiChat" class="nav-link">Gemini Chat</router-link>
+      </nav>
+    </header>
+
+    <!-- Router View -->
+    <main style="margin-top: 20px">
+      <router-view />
+    </main>
   </div>
 </template>
 
 <style scoped>
+/* Navbar 样式 */
 header {
   line-height: 1.5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+.navbar-brand {
+  font-weight: bold;
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
+/* 横排导航 */
+.nav-links {
+  display: flex;
+  gap: 16px; /* 横向间距 */
+  flex-wrap: wrap;
+}
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
+.nav-link {
+  text-decoration: none;
+  color: #000;
+  font-weight: 500;
+}
 
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
+.nav-link:hover,
+button.nav-link:hover {
+  color: #007bff;
+}
+
+button.nav-link {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .nav-links {
+    flex-direction: column;
+    gap: 8px;
   }
 }
 </style>

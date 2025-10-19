@@ -1,36 +1,38 @@
 <template>
   <div style="width: 350px; margin: 50px auto">
     <h2 style="margin-bottom: 20px">Sign in</h2>
+
     <form @submit.prevent="submitForm">
+      <!-- Email -->
       <div style="margin-bottom: 20px">
-        <label>Email:</label><br />
-        <input type="text" v-model="email" style="width: 100%; padding: 5px" />
-        <p v-if="emailError" style="color: red; margin: 5px 0 0">{{ emailError }}</p>
+        <label for="signinEmail">Email:</label><br />
+        <input id="signinEmail" type="text" v-model="email" style="width: 100%; padding: 5px" />
+        <p v-if="emailError" style="color: red; margin: 5px 0 0" aria-live="polite">
+          {{ emailError }}
+        </p>
       </div>
 
+      <!-- Password -->
       <div style="margin-bottom: 20px">
-        <label>Password:</label><br />
-        <input type="password" v-model="password" style="width: 100%; padding: 5px" />
-        <p v-if="passwordError" style="color: red; margin: 5px 0 0">{{ passwordError }}</p>
-      </div>
-
-      <div style="margin-bottom: 20px">
-        <label>Please select your role:</label><br />
-        <label style="display: block; margin-top: 5px">
-          <input type="radio" value="teen" v-model="selectedRole" /> I'm a young person
-        </label>
-        <label style="display: block; margin-top: 5px">
-          <input type="radio" value="staff" v-model="selectedRole" /> I'm supporting a young person
-        </label>
-        <p v-if="roleError" style="color: red; margin: 5px 0 0">{{ roleError }}</p>
+        <label for="signinPassword">Password:</label><br />
+        <input
+          id="signinPassword"
+          type="password"
+          v-model="password"
+          style="width: 100%; padding: 5px"
+        />
+        <p v-if="passwordError" style="color: red; margin: 5px 0 0" aria-live="polite">
+          {{ passwordError }}
+        </p>
       </div>
 
       <button type="submit" style="margin-top: 20px; padding: 5px 15px">Sign in</button>
     </form>
 
+    <!-- Signed in Users Table -->
     <div style="margin-top: 50px" v-if="users.length > 0">
       <h3>Signed in Users</h3>
-      <DataTable :value="users">
+      <DataTable :value="users" aria-label="Signed in users table">
         <Column field="email" header="Email"></Column>
         <Column field="password" header="Password"></Column>
         <Column field="role" header="Role"></Column>
@@ -44,88 +46,66 @@ import { ref } from 'vue'
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import { useRouter } from 'vue-router'
 import db from '@/firebase/init'
-import { collection, addDoc } from 'firebase/firestore'
+import { collection, getDocs } from 'firebase/firestore'
 import isAuthenticated from '@/authenticate'
 
 const email = ref('')
 const password = ref('')
-const selectedRole = ref('')
 const emailError = ref('')
 const passwordError = ref('')
-const roleError = ref('')
 const users = ref([])
 
 const auth = getAuth()
 const router = useRouter()
 
-const submitForm = () => {
-  // 表单验证
-  if (email.value === '') {
-    emailError.value = 'Please enter your email.'
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+const submitForm = async () => {
+  // 清空错误
+  emailError.value = ''
+  passwordError.value = ''
+
+  // 基本验证
+  if (email.value === '') emailError.value = 'Please enter your email.'
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value))
     emailError.value = 'Please enter a valid email address.'
-  } else {
-    emailError.value = ''
-  }
 
-  if (password.value === '') {
-    passwordError.value = 'Please enter your password.'
-  } else if (password.value.length < 8) {
-    passwordError.value = 'Password must be at least 8 characters.'
-  } else {
-    passwordError.value = ''
-  }
+  if (password.value === '') passwordError.value = 'Please enter your password.'
 
-  if (selectedRole.value === '') {
-    roleError.value = 'Please select a role.'
-  } else {
-    roleError.value = ''
-  }
+  // 如果没错误
+  if (emailError.value === '' && passwordError.value === '') {
+    try {
+      // Firebase Auth 登录
+      const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value)
+      const userEmail = userCredential.user.email
 
-  if (emailError.value === '' && passwordError.value === '' && roleError.value === '') {
-    signInWithEmailAndPassword(auth, email.value, password.value)
-      .then(async (userCredential) => {
-        alert('Sign in successful!')
-        isAuthenticated.value = true
+      // 🔹 从 Firestore 获取角色
+      const snap = await getDocs(collection(db, 'users'))
+      const allUsers = snap.docs.map((d) => d.data())
+      const currentUser = allUsers.find((u) => u.email === userEmail)
 
-        // 保存到 Firestore
-        try {
-          await addDoc(collection(db, 'users'), {
-            email: email.value,
-            password: password.value,
-            role: selectedRole.value,
-            timestamp: new Date(),
-          })
-          console.log('User info saved to Firestore!')
-        } catch (e) {
-          console.error('Error adding document: ', e)
-        }
+      if (!currentUser) {
+        alert('User not found in Firestore.')
+        return
+      }
 
-        // 本地显示
-        users.value.push({
-          email: email.value,
-          password: password.value,
-          role: selectedRole.value,
-        })
+      const role = currentUser.role || 'teen' // 默认给个role
+      localStorage.setItem('userRole', role)
+      isAuthenticated.value = true
 
-        // 清空表单
-        email.value = ''
-        password.value = ''
-        selectedRole.value = ''
-
-        // 跳转页面
-        const redirectPath = selectedRole.value === 'teen' ? '/TeenPage' : '/StaffPage'
-        router.push(redirectPath)
+      // 加入表格展示
+      users.value.push({
+        email: email.value,
+        password: password.value,
+        role: role,
       })
-      .catch((error) => {
-        if (error.code === 'auth/user-not-found') {
-          alert('This account does not exist. Please register first.')
-        } else if (error.code === 'auth/wrong-password') {
-          alert('Incorrect password. Please try again.')
-        } else {
-          alert('Sign in failed: ' + error.code)
-        }
-      })
+
+      // 🔸 根据角色跳转
+      if (role === 'admin') router.push('/AdminDashboard')
+      else if (role === 'staff') router.push('/StaffPage')
+      else router.push('/TeenPage')
+    } catch (err) {
+      console.error('Sign in failed:', err)
+      alert('Sign in failed: ' + err.message)
+    }
   } else {
     alert('Sign in failed, please fill in the correct information.')
   }
