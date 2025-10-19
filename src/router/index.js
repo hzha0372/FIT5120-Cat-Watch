@@ -3,7 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import FirebaseSigninView from '../views/FirebaseSigninView.vue'
 import FirebaseRegisterView from '../views/FirebaseRegisterView.vue'
 import TeenPage from '../views/TeenPage.vue'
-import StaffPage from '../views/StaffPage.vue'
+import DoctorPage from '@/views/DoctorPage.vue'
 import FeedbackAPI from '@/views/FeedbackAPI.vue'
 import AccessDenied from '@/views/AccessDenied.vue'
 import isAuthenticated from '@/authenticate'
@@ -28,8 +28,8 @@ const routes = [
     component: TeenPage,
   },
   {
-    path: '/StaffPage',
-    component: StaffPage,
+    path: '/DoctorPage',
+    component: DoctorPage,
   },
   {
     path: '/FeedbackAPI',
