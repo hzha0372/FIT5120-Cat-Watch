@@ -1,13 +1,4 @@
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import isAuthenticated from '@/authenticate'
-
-const router = useRouter()
-const logout = () => {
-  isAuthenticated.value = false
-  router.push('/FireLogin')
-}
 </script>
 
 <template>
@@ -17,11 +8,6 @@ const logout = () => {
       <a class="navbar-brand">Sun Safety Awareness</a>
       <nav class="nav-links">
         <router-link to="/Home" class="nav-link">Home</router-link>
-        <router-link to="/FireLogin" class="nav-link">Firebase Login</router-link>
-        <router-link to="/FireRegister" class="nav-link">Firebase Register</router-link>
-        <button v-if="isAuthenticated" class="nav-link" @click="logout">Logout</button>
-        <router-link to="/BulkEmail" class="nav-link">Bulk Email</router-link>
-        <router-link to="/FeedbackAPI" class="nav-link">FeedbackAPI</router-link>
         <router-link to="/SunSafety" class="nav-link">Sun Safety</router-link>
       </nav>
     </header>
