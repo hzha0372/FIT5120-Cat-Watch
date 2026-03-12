@@ -33,7 +33,7 @@
 
       <div v-if="uvResult" class="result-box">
         <p><strong>Location:</strong> {{ uvResult.locationName }}</p>
-        <p><strong>Today's Max UV:</strong> {{ uvResult.todayMaxUv.toFixed(1) }}</p>
+        <p><strong>Today's Max UV:</strong> {{ uvResult.todayMaxUv }}</p>
         <p><strong>Risk Level:</strong> {{ uvResult.riskLevel }}</p>
       </div>
 
@@ -60,9 +60,9 @@
     </section>
 
     <section class="feature-card" aria-labelledby="clothing-title">
-      <h2 id="clothing-title">Automatic Protection Advice</h2>
+      <h2 id="clothing-title">Clothing Choice Advice</h2>
       <p v-if="!uvResult">Check UV first to receive recommendations.</p>
-      <p v-else-if="uvResult.todayMaxUv < 3">
+      <p v-else-if="uvResult.todayMaxUv < 3.0">
         Today's max UV is below 3. Keep basic protection ready, and check again near midday.
       </p>
       <ul v-else class="advice-list">
@@ -86,18 +86,18 @@ const weatherContext = ref({ temperature: null })
 const mapLocation = ref({ center: { lng: 144.9631, lat: -37.8136 }, zoom: 12 })
 
 const uvRiskLevel = (value) => {
-  if (value <= 2) return 'Low (0-2)'
-  if (value <= 5) return 'Moderate (3-5)'
-  if (value <= 7) return 'High (6-7)'
-  if (value <= 10) return 'Very High (8-10)'
-  return 'Extreme (11+)'
+  if (value <= 2.9) return 'Low (0.0-2.9)'
+  if (value <= 5.9) return 'Moderate (3.0-5.9)'
+  if (value <= 7.9) return 'High (6.0-7.9)'
+  if (value <= 10.9) return 'Very High (8.0-10.9)'
+  return 'Extreme (11.0+)'
 }
 
 const uvDescriptor = (value) => {
-  if (value <= 2) return 'Low'
-  if (value <= 5) return 'Moderate'
-  if (value <= 7) return 'High'
-  if (value <= 10) return 'Very High'
+  if (value <= 2.9) return 'Low'
+  if (value <= 5.9) return 'Moderate'
+  if (value <= 7.9) return 'High'
+  if (value <= 10.9) return 'Very High'
   return 'Extreme'
 }
 
@@ -113,7 +113,7 @@ const uvWarningContent = computed(() => {
 
   const uv = uvResult.value.todayMaxUv
 
-  if (uv >= 11) {
+  if (uv >= 11.0) {
     return {
       title: `${uvDescriptor(uv)} UV Warning`,
       main: 'CRITICAL: Severe burning in under 15 mins - seek shade NOW.',
@@ -122,7 +122,7 @@ const uvWarningContent = computed(() => {
     }
   }
 
-  if (uv >= 8) {
+  if (uv >= 8.0) {
     return {
       title: `${uvDescriptor(uv)} UV Warning`,
       main: 'URGENT: 15 mins max before damage - protect yourself immediately.',
@@ -131,7 +131,7 @@ const uvWarningContent = computed(() => {
     }
   }
 
-  if (uv >= 6) {
+  if (uv >= 6.0) {
     return {
       title: `${uvDescriptor(uv)} UV Warning`,
       main: 'You have about 15 mins - find shade or apply sunscreen now.',
@@ -151,10 +151,10 @@ const uvWarningContent = computed(() => {
 const uvWarningClass = computed(() => {
   if (!uvResult.value) return ''
   const uv = uvResult.value.todayMaxUv
-  if (uv < 3) return ''
-  if (uv <= 5) return 'uv-warning--green'
-  if (uv <= 7) return 'uv-warning--yellow'
-  if (uv <= 10) return 'uv-warning--orange'
+  if (uv < 3.0) return ''
+  if (uv <= 5.9) return 'uv-warning--green'
+  if (uv <= 7.9) return 'uv-warning--yellow'
+  if (uv <= 10.9) return 'uv-warning--orange'
   return 'uv-warning--red'
 })
 
@@ -177,6 +177,7 @@ const fetchUvForCoordinates = async (latitude, longitude, locationName) => {
     if (typeof todayMaxUv !== 'number') {
       throw new Error("Unable to fetch today's max UV for this location.")
     }
+    const normalizedUv = Math.round(todayMaxUv * 10) / 10
 
     weatherContext.value = {
       temperature: typeof temperature === 'number' ? temperature : null,
@@ -184,8 +185,8 @@ const fetchUvForCoordinates = async (latitude, longitude, locationName) => {
 
     uvResult.value = {
       locationName,
-      todayMaxUv,
-      riskLevel: uvRiskLevel(todayMaxUv),
+      todayMaxUv: normalizedUv,
+      riskLevel: uvRiskLevel(normalizedUv),
     }
   } catch (error) {
     uvResult.value = null
@@ -336,25 +337,25 @@ const searchByPostcode = async () => {
 }
 
 const clothingAdvice = computed(() => {
-  if (!uvResult.value || uvResult.value.todayMaxUv < 3) return []
+  if (!uvResult.value || uvResult.value.todayMaxUv < 3.0) return []
 
   const uv = uvResult.value.todayMaxUv
   const temp = weatherContext.value.temperature
   const advice = []
 
-  if (uv <= 5) {
+  if (uv <= 5.9) {
     advice.push(
       'Moderate UV: wear a long-sleeve shirt or a light rash vest.',
       'Add a broad-brim hat and sunglasses for face and eye protection.',
       'Use SPF50+ sunscreen and reapply every 2 hours.',
     )
-  } else if (uv <= 7) {
+  } else if (uv <= 7.9) {
     advice.push(
       'High UV: choose tightly woven long sleeves and long pants.',
       'Wear a broad-brim hat and UV-rated sunglasses.',
       'Plan shade breaks between 10am and 4pm.',
     )
-  } else if (uv <= 10) {
+  } else if (uv <= 10.9) {
     advice.push(
       'Very high UV: cover up with UPF long sleeves or a rash vest.',
       'Prioritise shade and limit outdoor time at peak hours.',
