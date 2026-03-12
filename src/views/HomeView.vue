@@ -1,8 +1,8 @@
 <template>
   <main class="home-container">
     <section class="text-section">
-      <h1>Welcome to Youth Mental Health Support</h1>
-      <p>Provide resources and guidance for young people and their supporters.</p>
+      <h1>Sun Safety & UV Tracker</h1>
+      <p>Use the map or postcode search to check today's maximum UV and plan safer outdoor time.</p>
     </section>
 
     <aside id="sidebar" aria-label="Map location information">
