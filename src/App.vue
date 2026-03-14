@@ -1,14 +1,30 @@
 <script setup>
+import { useRouter } from 'vue-router'
+import isAuthenticated, { clearAuthentication } from '@/authenticate'
+
+const router = useRouter()
+
+const logout = async () => {
+  clearAuthentication()
+  await router.replace('/Login')
+}
 </script>
 
 <template>
   <div>
     <!-- Navbar -->
-    <header class="navbar bg-light px-3" role="navigation" aria-label="Main navigation">
+    <header
+      v-if="isAuthenticated"
+      class="navbar bg-light px-3"
+      role="navigation"
+      aria-label="Main navigation"
+    >
       <a class="navbar-brand">Sun Safety Awareness</a>
       <nav class="nav-links">
         <router-link to="/Home" class="nav-link">Home</router-link>
         <router-link to="/SunSafety" class="nav-link">Sun Safety</router-link>
+        <router-link to="/Awareness" class="nav-link">Awareness</router-link>
+        <button class="nav-link" type="button" @click="logout">Logout</button>
       </nav>
     </header>
 
