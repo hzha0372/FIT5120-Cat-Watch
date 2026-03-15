@@ -70,7 +70,7 @@
             <div class="sunscreen-box">
               <div class="sunscreen-label">Recommended type</div>
               <div class="sunscreen-value">SPF50 / SPF50+</div>
-              <div class="sunscreen-detail">High UV in Australia makes higher SPF a safer default for daily use.</div>
+              <div class="sunscreen-detail">{{ sunscreenTypeReason }}</div>
             </div>
 
             <div class="sunscreen-box">
@@ -315,6 +315,26 @@ const sunscreenGuide = computed(() => {
     return { amount: '7 teaspoons + prioritise reapplication every 2 hours' }
   }
   return { amount: '7 teaspoons + reapply more often (sweat/water/peak UV)' }
+})
+
+const sunscreenTypeReason = computed(() => {
+  const uv = uvSummary.value?.peakUvNumber
+  if (!Number.isFinite(uv)) {
+    return 'SPF50 blocks about 98% of UVB radiation. Load UV data to tailor the recommendation.'
+  }
+  if (uv < 3) {
+    return 'Low UV: SPF50 still blocks about 98% of UVB, giving strong coverage for extended time outside.'
+  }
+  if (uv < 6) {
+    return 'Moderate UV: SPF50 blocks about 98% of UVB, helping reduce daily exposure during longer outings.'
+  }
+  if (uv < 8) {
+    return 'High UV: SPF50 blocks about 98% of UVB. Choose water-resistant formulas for sweat or activity.'
+  }
+  if (uv < 11) {
+    return 'Very High UV: SPF50+ gives maximal UVB filtering (about 98%+). Reapply often, especially in heat.'
+  }
+  return 'Extreme UV: SPF50+ offers the strongest UVB filtering (about 98%+). Pair with shade and water resistance.'
 })
 
 const impactFeed = ref({ status: 'Waiting for dataset', peopleToday: '—' })
