@@ -69,6 +69,30 @@
         <li v-for="advice in clothingAdvice" :key="advice">{{ advice }}</li>
       </ul>
     </section>
+
+    <section class="feature-card" aria-labelledby="clothing-uv-title">
+      <h2 id="clothing-uv-title">Clothing Recommendations by UV Level</h2>
+      <p>
+        Use this quick guide to plan what to wear. When today's max UV is available, the
+        recommended row is highlighted.
+      </p>
+      <div class="uv-table" role="table" aria-label="Clothing recommendations by UV level">
+        <div class="uv-table__header" role="row">
+          <span role="columnheader">UV Level</span>
+          <span role="columnheader">Clothing Recommendations</span>
+        </div>
+        <div
+          v-for="row in clothingByUvLevel"
+          :key="row.label"
+          class="uv-table__row"
+          role="row"
+          :class="{ 'uv-table__row--active': row.isActive }"
+        >
+          <span role="cell" class="uv-table__label">{{ row.label }}</span>
+          <span role="cell" class="uv-table__text">{{ row.advice }}</span>
+        </div>
+      </div>
+    </section>
   </main>
 </template>
 
@@ -377,6 +401,43 @@ const clothingAdvice = computed(() => {
 
   return advice
 })
+
+const clothingByUvLevel = computed(() => {
+  const uv = uvResult.value?.todayMaxUv ?? null
+  const buildRow = (label, advice, isActive) => ({
+    label,
+    advice,
+    isActive,
+  })
+
+  return [
+    buildRow(
+      'Low (0.0-2.9)',
+      'Normal clothing is fine. Keep sunglasses and a hat ready for midday.',
+      uv !== null && uv < 3.0,
+    ),
+    buildRow(
+      'Moderate (3.0-5.9)',
+      'Long sleeves or light UPF layers, plus a broad-brim hat and sunglasses.',
+      uv !== null && uv >= 3.0 && uv <= 5.9,
+    ),
+    buildRow(
+      'High (6.0-7.9)',
+      'Tightly woven long sleeves and long pants with a broad-brim hat.',
+      uv !== null && uv >= 6.0 && uv <= 7.9,
+    ),
+    buildRow(
+      'Very High (8.0-10.9)',
+      'UPF long sleeves or rash vest, long pants, and minimise time outdoors.',
+      uv !== null && uv >= 8.0 && uv <= 10.9,
+    ),
+    buildRow(
+      'Extreme (11.0+)',
+      'Full coverage UPF clothing, wide-brim hat, and avoid direct sun at peak hours.',
+      uv !== null && uv >= 11.0,
+    ),
+  ]
+})
 </script>
 
 <style scoped>
@@ -525,5 +586,55 @@ button:not(:disabled):hover {
 
 .map-panel :deep(.map-wrapper) {
   height: 100% !important;
+}
+
+.advice-list {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.uv-table {
+  margin-top: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.uv-table__header,
+.uv-table__row {
+  display: grid;
+  grid-template-columns: minmax(160px, 210px) 1fr;
+  gap: 12px;
+  padding: 10px 12px;
+  align-items: start;
+}
+
+.uv-table__header {
+  background: #f8fafc;
+  font-weight: 700;
+  color: #0f172a;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.uv-table__row {
+  border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+  color: #334155;
+}
+
+.uv-table__row:last-child {
+  border-bottom: none;
+}
+
+.uv-table__row--active {
+  background: rgba(255, 210, 128, 0.35);
+  box-shadow: inset 3px 0 0 #f59e0b;
+  color: #4b2c00;
+  font-weight: 600;
+}
+
+.uv-table__label {
+  font-weight: 600;
+  color: inherit;
 }
 </style>
