@@ -91,12 +91,38 @@
             <span v-if="uvSummary">({{ riskLabel }})</span>
           </div>
         </section>
+        <section class="card" aria-labelledby="clothing-uv-title">
+          <div class="card-head">
+            <h2 id="clothing-uv-title" class="card-title">3) Clothing Recommendations by UV Level</h2>
+            <p class="card-caption">
+              Use this quick guide to plan what to wear. The recommended row highlights based on the
+              selected peak UV.
+            </p>
+          </div>
+
+          <div class="uv-table" role="table" aria-label="Clothing recommendations by UV level">
+            <div class="uv-table__header" role="row">
+              <span role="columnheader">UV Level</span>
+              <span role="columnheader">Clothing Recommendations</span>
+            </div>
+            <div
+              v-for="row in clothingByUvLevel"
+              :key="row.label"
+              class="uv-table__row"
+              role="row"
+              :class="{ 'uv-table__row--active': row.isActive }"
+            >
+              <span role="cell" class="uv-table__label">{{ row.label }}</span>
+              <span role="cell" class="uv-table__text">{{ row.advice }}</span>
+            </div>
+          </div>
+        </section>
       </div>
 
       <aside class="side" aria-label="Myth versus fact">
         <section class="card sticky" aria-labelledby="myth-title">
           <div class="card-head">
-            <h2 id="myth-title" class="card-title">3) Myth vs Fact</h2>
+            <h2 id="myth-title" class="card-title">4) Myth vs Fact</h2>
             <p class="card-caption">Tap a myth to see the fact and what to do instead.</p>
           </div>
 
@@ -337,6 +363,42 @@ const sunscreenTypeReason = computed(() => {
   return 'Extreme UV: SPF50+ offers the strongest UVB filtering (about 98%+). Pair with shade and water resistance.'
 })
 
+const clothingByUvLevel = computed(() => {
+  const uv = uvSummary.value?.peakUvNumber ?? null
+  const buildRow = (label, advice, isActive) => ({
+    label,
+    advice,
+    isActive,
+  })
+
+  return [
+    buildRow(
+      'Low (0.0-2.9)',
+      'Normal clothing is fine. Keep sunglasses and a hat ready for midday.',
+      uv !== null && uv < 3.0,
+    ),
+    buildRow(
+      'Moderate (3.0-5.9)',
+      'Long sleeves or light UPF layers, plus a broad-brim hat and sunglasses.',
+      uv !== null && uv >= 3.0 && uv <= 5.9,
+    ),
+    buildRow(
+      'High (6.0-7.9)',
+      'Tightly woven long sleeves and long pants with a broad-brim hat.',
+      uv !== null && uv >= 6.0 && uv <= 7.9,
+    ),
+    buildRow(
+      'Very High (8.0-10.9)',
+      'UPF long sleeves or rash vest, long pants, and minimize time outdoors.',
+      uv !== null && uv >= 8.0 && uv <= 10.9,
+    ),
+    buildRow(
+      'Extreme (11.0+)',
+      'Full coverage UPF clothing, wide-brim hat, and avoid direct sun at peak hours.',
+      uv !== null && uv >= 11.0,
+    ),
+  ]
+})
 const impactFeed = ref({ status: 'Waiting for dataset', peopleToday: '—' })
 
 const clearChart = () => {
@@ -660,6 +722,50 @@ onBeforeUnmount(() => {
   margin-top: 12px;
   color: rgba(15, 23, 42, 0.75);
 }
+.uv-table {
+  margin-top: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.uv-table__header,
+.uv-table__row {
+  display: grid;
+  grid-template-columns: minmax(160px, 210px) 1fr;
+  gap: 12px;
+  padding: 10px 12px;
+  align-items: start;
+}
+
+.uv-table__header {
+  background: rgba(15, 23, 42, 0.04);
+  font-weight: 800;
+  color: rgba(15, 23, 42, 0.85);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.12);
+}
+
+.uv-table__row {
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  color: rgba(15, 23, 42, 0.85);
+}
+
+.uv-table__row:last-child {
+  border-bottom: none;
+}
+
+.uv-table__row--active {
+  background: rgba(251, 191, 36, 0.22);
+  box-shadow: inset 3px 0 0 #f59e0b;
+  color: #4b2c00;
+  font-weight: 700;
+}
+
+.uv-table__label {
+  font-weight: 700;
+  color: inherit;
+}
 
 .sticky {
   position: sticky;
@@ -758,3 +864,5 @@ onBeforeUnmount(() => {
   }
 }
 </style>
+
+
