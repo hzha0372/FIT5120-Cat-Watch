@@ -22,9 +22,14 @@
           <div class="jump-text">Myth vs Fact</div>
           <div class="jump-btn">Read more</div>
         </a>
-        <a class="jump-card" href="#sources">
+        <a class="jump-card" href="#videos">
           <div class="jump-number">03</div>
-          <div class="jump-text">Videos & articles</div>
+          <div class="jump-text">Videos</div>
+          <div class="jump-btn">Read more</div>
+        </a>
+        <a class="jump-card" href="#articles">
+          <div class="jump-number">04</div>
+          <div class="jump-text">Articles</div>
           <div class="jump-btn">Read more</div>
         </a>
       </div>
@@ -82,15 +87,44 @@
       </div>
     </section>
 
-    <section id="sources" class="awareness-card fade" aria-labelledby="sources-title">
+    <section id="videos" class="awareness-card fade" aria-labelledby="videos-title">
       <div class="card-head">
-        <h2 id="sources-title" class="card-title">Videos & articles</h2>
-        <p class="card-caption">Click to open a trusted source (new tab).</p>
+        <h2 id="videos-title" class="card-title">Videos</h2>
+        <p class="card-caption">Click to open a video (new tab).</p>
       </div>
 
       <div class="source-grid" aria-label="Sources grid">
         <a
-          v-for="s in sources"
+          v-for="s in videoSources"
+          :key="s.url"
+          class="source-card"
+          :href="s.url"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <div class="source-thumb">
+            <img v-if="s.thumb" :src="s.thumb" :alt="s.title" />
+            <div v-else class="source-fallback">{{ s.type }}</div>
+            <div v-if="s.type === 'Video'" class="source-play" aria-hidden="true"></div>
+          </div>
+          <div class="source-body">
+            <div class="source-type">{{ s.type }}</div>
+            <div class="source-title">{{ s.title }}</div>
+            <div class="source-cta">Open</div>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section id="articles" class="awareness-card fade" aria-labelledby="articles-title">
+      <div class="card-head">
+        <h2 id="articles-title" class="card-title">Articles</h2>
+        <p class="card-caption">Click to open an article (new tab).</p>
+      </div>
+
+      <div class="source-grid" aria-label="Sources grid">
+        <a
+          v-for="s in articleSources"
           :key="s.url"
           class="source-card"
           :href="s.url"
@@ -382,6 +416,9 @@ const sources = ref([
     thumb: 'https://img.youtube.com/vi/So27AO7JCEA/hqdefault.jpg',
   },
 ])
+
+const videoSources = computed(() => sources.value.filter((s) => s.type === 'Video'))
+const articleSources = computed(() => sources.value.filter((s) => s.type === 'Article'))
 </script>
 
 <style scoped>
