@@ -25,7 +25,7 @@ const logout = async () => {
         <img
           v-if="!logoFailed"
           class="brand-logo"
-          src="/sunsafety-logo.png"
+          src="/favicon.ico"
           alt="Sun Safety logo"
           @error="logoFailed = true"
         />
