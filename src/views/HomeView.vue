@@ -756,7 +756,7 @@ onBeforeUnmount(() => {
   border-radius: 14px;
   padding: 12px;
   border: 1px solid rgba(15, 23, 42, 0.08);
-  background: rgba(15, 23, 42, 0.02);
+  background: #eaf6ff;
 }
 
 .metric-label {
