@@ -58,10 +58,38 @@
   font-weight: normal;
 }
 
+html,
+body,
+#app {
+  min-height: 100%;
+  background-color: transparent !important;
+}
+
+html {
+  background:
+    radial-gradient(900px 520px at 10% -10%, rgba(255, 168, 102, 0.45), transparent 60%),
+    radial-gradient(900px 520px at 90% 0%, rgba(92, 200, 255, 0.5), transparent 60%),
+    radial-gradient(1100px 600px at 50% 105%, rgba(168, 140, 255, 0.4), transparent 60%),
+    linear-gradient(180deg, #f5f1ff 0%, #eef7ff 45%, #fef3e8 100%) !important;
+}
+
 body {
   min-height: 100vh;
   color: var(--color-text);
-  background: var(--color-background);
+  background:
+    radial-gradient(900px 520px at 10% -10%, rgba(255, 168, 102, 0.45), transparent 60%),
+    radial-gradient(900px 520px at 90% 0%, rgba(92, 200, 255, 0.5), transparent 60%),
+    radial-gradient(1100px 600px at 50% 105%, rgba(168, 140, 255, 0.4), transparent 60%),
+    linear-gradient(180deg, #f5f1ff 0%, #eef7ff 45%, #fef3e8 100%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-color: #f3f5ff !important;
+  background-image:
+    radial-gradient(900px 520px at 10% -10%, rgba(255, 168, 102, 0.45), transparent 60%),
+    radial-gradient(900px 520px at 90% 0%, rgba(92, 200, 255, 0.5), transparent 60%),
+    radial-gradient(1100px 600px at 50% 105%, rgba(168, 140, 255, 0.4), transparent 60%),
+    linear-gradient(180deg, #f5f1ff 0%, #eef7ff 45%, #fef3e8 100%) !important;
   transition:
     color 0.5s,
     background-color 0.5s;
@@ -83,4 +111,20 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: -20vmax;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(255, 168, 102, 0.24), transparent 40%),
+    radial-gradient(circle at 82% 18%, rgba(92, 200, 255, 0.26), transparent 38%),
+    radial-gradient(circle at 50% 82%, rgba(168, 140, 255, 0.22), transparent 42%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+#app {
+  background: transparent !important;
 }

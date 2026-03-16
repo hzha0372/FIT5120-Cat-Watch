@@ -193,7 +193,11 @@
                 <span class="safe-leg safe-leg--safe">🟢 Safe (UV &lt; 3)</span>
                 <span class="safe-leg safe-leg--moderate">🟡 Moderate (3–5.9)</span>
                 <span class="safe-leg safe-leg--high">🟠 High (6–7.9)</span>
+<<<<<<< HEAD
                 <span class="safe-leg safe-leg--veryhigh">🔴 Very High / Extreme (>=8)</span>
+=======
+                <span class="safe-leg safe-leg--veryhigh">🔴 Very High / Extreme (≥8)</span>
+>>>>>>> 160d5d5fdea2ae403ca8be135374572c7979fd0e
               </div>
             </div>
 
@@ -208,7 +212,11 @@
               <div class="safe-window-item safe-window-item--peak">
                 <div class="sw-icon">⚠️</div>
                 <div>
+<<<<<<< HEAD
                   <div class="sw-title">Avoid outdoors (UV >= 3)</div>
+=======
+                  <div class="sw-title">Avoid outdoors (UV ≥ 3)</div>
+>>>>>>> 160d5d5fdea2ae403ca8be135374572c7979fd0e
                   <div class="sw-value">{{ safeWindowsPeak }}</div>
                 </div>
               </div>
