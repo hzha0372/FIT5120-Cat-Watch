@@ -1,21 +1,8 @@
 <template>
   <main class="home-shell" aria-label="Home">
-    <header class="hero enter">
-      <div>
-        <h1 class="hero-title">Feel the Sun, Not the Burn</h1>
-        <p class="hero-subtitle">
-          Click the map to get a simple UV snapshot for Melbourne—then use “Know More” to explore
-          myths, sunscreen guidance, and what to do next.
-        </p>
-        <div class="hero-actions">
-          <router-link to="/Awareness" class="primary-btn">Know More</router-link>
-        </div>
-      </div>
-    </header>
-
     <section class="card enter" aria-labelledby="uv-title">
       <div class="card-head">
-        <h2 id="uv-title" class="card-title">UV Snapshot (Melbourne)</h2>
+        <h1 id="uv-title" class="card-title">UV Dashboard</h1>
         <p class="card-caption">
           Select a point on the map to load today’s hourly UV forecast (Open‑Meteo).
         </p>
@@ -46,10 +33,6 @@
 
           <p v-if="loading" class="status">Loading hourly UV…</p>
           <p v-else-if="errorMessage" class="error">{{ errorMessage }}</p>
-
-          <div class="secondary-actions">
-            <router-link to="/Awareness" class="secondary-btn">See myths, sunscreen guide & videos</router-link>
-          </div>
         </div>
       </div>
     </section>
@@ -217,47 +200,6 @@ watch(
   gap: 16px;
 }
 
-.hero {
-  border-radius: 18px;
-  padding: 18px 20px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  background: linear-gradient(135deg, rgba(14, 165, 233, 0.16), rgba(34, 197, 94, 0.08));
-}
-
-.hero-title {
-  margin: 0;
-  font-size: 2rem;
-  letter-spacing: -0.02em;
-}
-
-.hero-subtitle {
-  margin: 8px 0 0;
-  color: rgba(15, 23, 42, 0.75);
-  max-width: 72ch;
-}
-
-.hero-actions {
-  margin-top: 14px;
-}
-
-.primary-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 14px;
-  border-radius: 999px;
-  background: #0f172a;
-  color: #fff;
-  text-decoration: none;
-  font-weight: 900;
-  transition: transform 160ms ease, box-shadow 160ms ease;
-}
-
-.primary-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.18);
-}
-
 .card {
   border-radius: 18px;
   background: #fff;
@@ -385,28 +327,6 @@ watch(
   .map-grid {
     grid-template-columns: 1fr;
   }
-}
-
-.secondary-actions {
-  margin-top: 12px;
-}
-
-.secondary-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(15, 23, 42, 0.16);
-  background: rgba(15, 23, 42, 0.02);
-  text-decoration: none;
-  color: rgba(15, 23, 42, 0.9);
-  font-weight: 800;
-  transition: transform 160ms ease;
-}
-
-.secondary-btn:hover {
-  transform: translateY(-1px);
 }
 
 .enter {

@@ -1,7 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import SunSafetyDashboard from '../views/SunSafetyDashboard.vue'
 import AwarenessView from '../views/AwarenessView.vue'
+import SkinLabView from '../views/SkinLabView.vue'
+import ProtectionPlannerView from '../views/ProtectionPlannerView.vue'
+import ReminderCentreView from '../views/ReminderCentreView.vue'
 import LoginView from '../views/LoginView.vue'
 import AccessDenied from '../views/AccessDenied.vue'
 import isAuthenticated from '@/authenticate'
@@ -17,13 +19,23 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/SunSafety',
-    component: SunSafetyDashboard,
+    path: '/Awareness',
+    component: AwarenessView,
     meta: { requiresAuth: true },
   },
   {
-    path: '/Awareness',
-    component: AwarenessView,
+    path: '/SkinLab',
+    component: SkinLabView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/ProtectionPlanner',
+    component: ProtectionPlannerView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/ReminderCentre',
+    component: ReminderCentreView,
     meta: { requiresAuth: true },
   },
   {

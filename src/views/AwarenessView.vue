@@ -4,7 +4,7 @@
       <div>
         <h1 class="awareness-title">UV Awareness</h1>
         <p class="awareness-subtitle">
-          Understand UV in plain language, get sunscreen guidance, and learn what’s myth vs fact.
+          Understand UV in plain language, learn what’s myth vs fact, and explore trusted sources.
         </p>
       </div>
     </header>
@@ -17,18 +17,13 @@
           <div class="jump-text">UV throughout the day</div>
           <div class="jump-btn">Read more</div>
         </a>
-        <a class="jump-card" href="#sunscreen-guide">
-          <div class="jump-number">02</div>
-          <div class="jump-text">Sunscreen guide</div>
-          <div class="jump-btn">Read more</div>
-        </a>
         <a class="jump-card" href="#myth-fact">
-          <div class="jump-number">03</div>
+          <div class="jump-number">02</div>
           <div class="jump-text">Myth vs Fact</div>
           <div class="jump-btn">Read more</div>
         </a>
         <a class="jump-card" href="#sources">
-          <div class="jump-number">04</div>
+          <div class="jump-number">03</div>
           <div class="jump-text">Videos & articles</div>
           <div class="jump-btn">Read more</div>
         </a>
@@ -39,23 +34,8 @@
       <div class="card-head">
         <h2 id="uv-daily-title" class="card-title">UV throughout the day (Hourly)</h2>
         <p class="card-caption">
-          Data source: Open-Meteo hourly forecast. Select your location to view today’s UV curve.
+          Data source: Open-Meteo hourly forecast.
         </p>
-      </div>
-
-      <div class="control-row">
-        <button @click="useCurrentLocation" :disabled="loading">Use My Location</button>
-        <button @click="useMapLocation" :disabled="loading">Use Map Location</button>
-        <span>or</span>
-        <input
-          v-model.trim="postcode"
-          type="text"
-          inputmode="numeric"
-          maxlength="4"
-          placeholder="Enter Australian postcode"
-          aria-label="Enter Australian postcode"
-        />
-        <button @click="searchByPostcode" :disabled="loading || !postcode">Load UV</button>
       </div>
 
       <p v-if="loading">Loading hourly UV...</p>
@@ -81,33 +61,6 @@
         <div class="summary-item">
           <div class="summary-label">Hours UV ≥ 3</div>
           <div class="summary-value">{{ summary.hoursUv3Plus }}</div>
-        </div>
-      </div>
-    </section>
-
-    <section id="sunscreen-guide" class="awareness-card fade" aria-labelledby="sunscreen-title">
-      <div class="card-head">
-        <h2 id="sunscreen-title" class="card-title">Sunscreen guide (simple)</h2>
-        <p class="card-caption">Apply 20 minutes before sun exposure. Reapply regularly.</p>
-      </div>
-
-      <div class="guide-grid" aria-label="Sunscreen guidance">
-        <div class="guide-box">
-          <div class="guide-label">Recommended type</div>
-          <div class="guide-value">SPF50 / SPF50+</div>
-          <div class="guide-detail">Higher UV conditions make higher SPF a safer default for daily use.</div>
-        </div>
-
-        <div class="guide-box">
-          <div class="guide-label">How much to apply</div>
-          <div class="guide-value">7 teaspoons (adult body)</div>
-          <div class="guide-detail">Rough guide: 1 tsp per arm/leg, 1 tsp front, 1 tsp back, 1 tsp face/neck.</div>
-        </div>
-
-        <div class="guide-box">
-          <div class="guide-label">Reapply sooner if</div>
-          <div class="guide-value">Sweating / swimming</div>
-          <div class="guide-detail">Reapply after water, sport, or towelling.</div>
         </div>
       </div>
     </section>
@@ -161,17 +114,11 @@
 </template>
 
 <script setup>
-import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import * as d3 from 'd3'
-import Map from '@/components/Map.vue'
 
-const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN || ''
-
-const postcode = ref('')
 const loading = ref(false)
 const errorMessage = ref('')
-
-const mapLocation = ref({ center: { lng: 144.9631, lat: -37.8136 }, zoom: 12 })
 const locationLabel = ref('')
 
 const hourly = ref([])
@@ -230,100 +177,6 @@ const fetchHourlyUvForCoordinates = async (latitude, longitude, label) => {
     hourly.value = []
     locationLabel.value = ''
     errorMessage.value = error?.message || 'Failed to load hourly UV data.'
-  } finally {
-    loading.value = false
-  }
-}
-
-const reverseGeocode = async (lng, lat) => {
-  if (!mapboxToken) return ''
-
-  try {
-    const response = await fetch(
-      `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?types=place,locality,postcode&limit=1&access_token=${mapboxToken}`,
-    )
-    const data = await response.json()
-    return data?.features?.[0]?.place_name || ''
-  } catch {
-    return ''
-  }
-}
-
-const useCurrentLocation = () => {
-  if (!navigator.geolocation) {
-    errorMessage.value = 'Geolocation is not supported by your browser.'
-    return
-  }
-
-  loading.value = true
-  errorMessage.value = ''
-
-  navigator.geolocation.getCurrentPosition(
-    async (pos) => {
-      const lat = pos.coords.latitude
-      const lng = pos.coords.longitude
-
-      const label = (await reverseGeocode(lng, lat)) || 'Current location'
-      await fetchHourlyUvForCoordinates(lat, lng, label)
-    },
-    async (error) => {
-      if (error?.code === 1) {
-        errorMessage.value =
-          'Location permission was denied. Please allow location permission, or enter an Australian postcode.'
-      } else {
-        errorMessage.value = 'Could not determine your location. Please try again or use postcode.'
-      }
-      loading.value = false
-    },
-    { enableHighAccuracy: true, timeout: 8000 },
-  )
-}
-
-const useMapLocation = async () => {
-  const lng = mapLocation.value?.center?.lng
-  const lat = mapLocation.value?.center?.lat
-
-  if (!Number.isFinite(lng) || !Number.isFinite(lat)) {
-    errorMessage.value = 'Please select a valid point on the map.'
-    return
-  }
-
-  const label = (await reverseGeocode(lng, lat)) || 'Selected map location'
-  await fetchHourlyUvForCoordinates(lat, lng, label)
-}
-
-const searchByPostcode = async () => {
-  if (!mapboxToken) {
-    errorMessage.value = 'Mapbox token missing. Set VITE_MAPBOX_TOKEN to enable postcode search.'
-    return
-  }
-  if (!/^\d{4}$/.test(postcode.value)) {
-    errorMessage.value = 'Please enter a valid 4-digit Australian postcode.'
-    return
-  }
-
-  loading.value = true
-  errorMessage.value = ''
-
-  try {
-    const geoResponse = await fetch(
-      `https://api.mapbox.com/geocoding/v5/mapbox.places/${postcode.value}.json?country=au&types=postcode&limit=1&access_token=${mapboxToken}`,
-    )
-    const geoData = await geoResponse.json()
-    const feature = geoData?.features?.[0]
-
-    if (!feature?.center) {
-      throw new Error('Australian postcode not found. Please try another postcode.')
-    }
-
-    const [lng, lat] = feature.center
-    const label = feature.place_name || `Postcode ${postcode.value}`
-
-    await fetchHourlyUvForCoordinates(lat, lng, label)
-  } catch (error) {
-    hourly.value = []
-    locationLabel.value = ''
-    errorMessage.value = error?.message || 'Could not look up postcode.'
   } finally {
     loading.value = false
   }
@@ -461,20 +314,16 @@ watch(
   },
 )
 
-watch(
-  () => mapLocation.value,
-  () => {
-    // if you change map selection but haven't loaded data yet, do nothing
-  },
-  { deep: true },
-)
-
 const setupResize = () => {
   resizeHandler = () => drawChart()
   window.addEventListener('resize', resizeHandler)
 }
 
 setupResize()
+
+onMounted(async () => {
+  await fetchHourlyUvForCoordinates(-37.8136, 144.9631, 'Melbourne')
+})
 
 onBeforeUnmount(() => {
   if (resizeHandler) window.removeEventListener('resize', resizeHandler)
@@ -641,34 +490,6 @@ const sources = ref([
   color: rgba(15, 23, 42, 0.65);
 }
 
-.control-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-  margin: 12px 0;
-}
-
-.control-row input {
-  padding: 8px 10px;
-  border-radius: 10px;
-  border: 1px solid rgba(15, 23, 42, 0.18);
-}
-
-.control-row button {
-  border: none;
-  border-radius: 10px;
-  padding: 8px 12px;
-  font-weight: 700;
-  background: #0ea5e9;
-  color: #ffffff;
-}
-
-.control-row button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
 .error-text {
   color: #b91c1c;
   font-weight: 600;
@@ -730,9 +551,6 @@ const sources = ref([
     grid-template-columns: 1fr;
   }
   .jump-grid {
-    grid-template-columns: 1fr;
-  }
-  .guide-grid {
     grid-template-columns: 1fr;
   }
   .source-grid {

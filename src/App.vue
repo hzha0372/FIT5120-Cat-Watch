@@ -37,6 +37,9 @@ const logout = async () => {
       <nav class="nav-links">
         <router-link to="/Home" class="nav-link">Home</router-link>
         <router-link to="/Awareness" class="nav-link">Awareness</router-link>
+        <router-link to="/SkinLab" class="nav-link">Skin Lab</router-link>
+        <router-link to="/ProtectionPlanner" class="nav-link">Protection Planner</router-link>
+        <router-link to="/ReminderCentre" class="nav-link">Reminder Centre</router-link>
         <button class="nav-link" type="button" @click="logout">Logout</button>
       </nav>
     </header>
