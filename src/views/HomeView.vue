@@ -12,7 +12,8 @@
         <div>
           <Map v-model="mapLocation" height="420px" aria-label="Melbourne map" />
           <div class="map-hint">
-            Selected: {{ mapLocation.center.lng.toFixed(4) }}, {{ mapLocation.center.lat.toFixed(4) }}
+            Selected: {{ mapLocation.center.lng.toFixed(4) }},
+            {{ mapLocation.center.lat.toFixed(4) }}
           </div>
         </div>
 
@@ -206,7 +207,9 @@ watch(
   border: 1px solid rgba(15, 23, 42, 0.08);
   box-shadow: 0 10px 26px rgba(15, 23, 42, 0.05);
   padding: 16px;
-  transition: transform 160ms ease, box-shadow 160ms ease;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
 }
 
 .card:hover {
@@ -238,8 +241,9 @@ watch(
 .map-hint {
   margin-top: 10px;
   color: rgba(15, 23, 42, 0.65);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
-    'Courier New', monospace;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
   font-size: 0.9rem;
 }
 
@@ -286,7 +290,7 @@ watch(
 }
 
 .alert--low {
-  background: rgba(34, 197, 94, 0.10);
+  background: rgba(34, 197, 94, 0.1);
 }
 
 .alert--moderate {
@@ -299,7 +303,7 @@ watch(
 
 .alert--veryhigh,
 .alert--extreme {
-  background: rgba(239, 68, 68, 0.10);
+  background: rgba(239, 68, 68, 0.1);
 }
 
 .placeholder {

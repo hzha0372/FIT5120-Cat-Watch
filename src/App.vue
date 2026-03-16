@@ -25,7 +25,7 @@ const logout = async () => {
         <img
           v-if="!logoFailed"
           class="brand-logo"
-          src="/favicon.ico"
+          src="/images/sunsafe-logo.jpg"
           alt="Sun Safety logo"
           @error="logoFailed = true"
         />
@@ -64,21 +64,34 @@ header {
   display: flex;
   align-items: center;
   gap: 12px;
+  padding: 6px 10px 6px 8px;
+  border-radius: 12px;
+  background: transparent;
+  box-shadow: none;
 }
 
 .brand-logo {
-  width: 42px;
-  height: 42px;
+  width: 46px;
+  height: 46px;
   object-fit: contain;
+  filter: drop-shadow(0 6px 10px rgba(245, 158, 11, 0.35));
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .brand-title {
   font-weight: 900;
+  letter-spacing: 0.02em;
+  color: #0f172a;
 }
 
 .brand-tagline {
   font-size: 0.9rem;
-  color: rgba(15, 23, 42, 0.7);
+  color: rgba(15, 23, 42, 0.75);
 }
 
 .nav-links {
