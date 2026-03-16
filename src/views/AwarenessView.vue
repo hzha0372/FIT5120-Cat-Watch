@@ -215,6 +215,85 @@
         Tap a skin tone above to see your personalised UV sensitivity guide.
       </div>
     </section>
+
+    <!-- Sun Safety Knowledge Quiz -->
+    <section class="awareness-card" aria-labelledby="quiz-title">
+      <div class="card-head">
+        <h2 id="quiz-title" class="card-title">Sun Safety Knowledge Quiz</h2>
+        <p class="card-caption">
+          Test what you know about sun safety — 5 questions with instant feedback.
+        </p>
+      </div>
+
+      <div v-if="!quizSubmitted">
+        <div
+          v-for="(q, qi) in quizQuestions"
+          :key="qi"
+          class="quiz-question"
+          :class="{ 'quiz-question--answered': quizAnswers[qi] !== null }"
+        >
+          <div class="quiz-q-text">
+            <span class="quiz-q-num">Q{{ qi + 1 }}</span>
+            {{ q.question }}
+          </div>
+          <div class="quiz-options">
+            <button
+              v-for="(opt, oi) in q.options"
+              :key="oi"
+              class="quiz-opt"
+              :class="{
+                'quiz-opt--selected': quizAnswers[qi] === oi,
+              }"
+              @click="quizAnswers[qi] = oi"
+            >
+              <span class="quiz-opt-letter">{{ String.fromCharCode(65 + oi) }}</span>
+              {{ opt }}
+            </button>
+          </div>
+        </div>
+
+        <div class="quiz-submit-row">
+          <span class="quiz-answered-count">{{ quizAnsweredCount }} / {{ quizQuestions.length }} answered</span>
+          <button
+            class="quiz-submit-btn"
+            :disabled="quizAnsweredCount < quizQuestions.length"
+            @click="submitQuiz"
+          >
+            Submit Quiz
+          </button>
+        </div>
+      </div>
+
+      <div v-else class="quiz-results">
+        <div class="quiz-score-banner" :class="`quiz-score--${quizScoreClass}`">
+          <div class="quiz-score-num">{{ quizScore }} / {{ quizQuestions.length }}</div>
+          <div class="quiz-score-label">{{ quizScoreLabel }}</div>
+        </div>
+
+        <div class="quiz-review">
+          <div
+            v-for="(q, qi) in quizQuestions"
+            :key="qi"
+            class="quiz-review-item"
+            :class="quizAnswers[qi] === q.correct ? 'quiz-review--correct' : 'quiz-review--wrong'"
+          >
+            <div class="quiz-review-q">
+              <span class="quiz-review-icon">{{ quizAnswers[qi] === q.correct ? '✅' : '❌' }}</span>
+              <strong>Q{{ qi + 1 }}:</strong> {{ q.question }}
+            </div>
+            <div class="quiz-review-ans">
+              <span v-if="quizAnswers[qi] !== q.correct" class="quiz-your-ans">
+                Your answer: {{ q.options[quizAnswers[qi]] }}
+              </span>
+              <span class="quiz-correct-ans">Correct: {{ q.options[q.correct] }}</span>
+            </div>
+            <div class="quiz-explanation">{{ q.explanation }}</div>
+          </div>
+        </div>
+
+        <button class="quiz-retry-btn" @click="resetQuiz">Try Again</button>
+      </div>
+    </section>
   </main>
 </template>
 
@@ -938,6 +1017,84 @@ watch(
 )
 // ─────────────────────────────────────────────────────────────────────────────
 
+// ── Sun Safety Knowledge Quiz ─────────────────────────────────────────────────
+const quizQuestions = [
+  {
+    question: 'At what UV Index level should you start wearing sun protection?',
+    options: ['UV 1', 'UV 3', 'UV 6', 'UV 8'],
+    correct: 1,
+    explanation:
+      'Sun protection (sunscreen, hat, clothing) is recommended when the UV Index reaches 3 or above, according to the Cancer Council Australia and WHO.',
+  },
+  {
+    question: 'How long does SPF50+ sunscreen protect you if applied correctly?',
+    options: ['All day', '6 hours', '2 hours', '30 minutes'],
+    correct: 2,
+    explanation:
+      'SPF50+ sunscreen should be reapplied at least every 2 hours — or more frequently if swimming, sweating, or towelling. No sunscreen lasts all day.',
+  },
+  {
+    question: 'Which part of the body is most commonly missed when applying sunscreen?',
+    options: ['Arms', 'Back of the neck and ears', 'Chest', 'Legs'],
+    correct: 1,
+    explanation:
+      'The back of the neck, ears, and the top of the head are commonly missed areas that can receive significant UV exposure, especially in outdoor activities.',
+  },
+  {
+    question: 'Can you get sunburnt on a cloudy day?',
+    options: [
+      'No, clouds block all UV',
+      'Only if it is very hot',
+      'Yes — up to 80% of UV can penetrate cloud cover',
+      'Only near reflective surfaces like water',
+    ],
+    correct: 2,
+    explanation:
+      'Clouds do not fully block UV radiation. Up to 80% of UV rays can pass through cloud cover, meaning sun protection is still essential on overcast days when UV ≥ 3.',
+  },
+  {
+    question: 'Which of the following does NOT protect against UV radiation?',
+    options: ['UPF50+ clothing', 'Wide-brim hat', 'Dark-tinted car window glass', 'SPF50+ sunscreen'],
+    correct: 2,
+    explanation:
+      'Standard car window glass blocks most UVB rays but not UVA rays. Laminated windshields provide better protection, but side and rear windows may let UVA through.',
+  },
+]
+
+const quizAnswers = ref(Array(quizQuestions.length).fill(null))
+const quizSubmitted = ref(false)
+
+const quizAnsweredCount = computed(() => quizAnswers.value.filter(a => a !== null).length)
+
+const quizScore = computed(() =>
+  quizQuestions.reduce((sum, q, i) => sum + (quizAnswers.value[i] === q.correct ? 1 : 0), 0),
+)
+
+const quizScoreClass = computed(() => {
+  const s = quizScore.value
+  if (s >= 4) return 'great'
+  if (s >= 2) return 'ok'
+  return 'low'
+})
+
+const quizScoreLabel = computed(() => {
+  const s = quizScore.value
+  if (s === 5) return 'Perfect! You are a sun safety expert.'
+  if (s >= 4) return 'Great job! Almost there.'
+  if (s >= 2) return 'Good start — review the explanations below.'
+  return 'Keep learning! Check the explanations to improve.'
+})
+
+const submitQuiz = () => {
+  quizSubmitted.value = true
+}
+
+const resetQuiz = () => {
+  quizAnswers.value = Array(quizQuestions.length).fill(null)
+  quizSubmitted.value = false
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 onBeforeUnmount(() => {
   if (resizeHandler) window.removeEventListener('resize', resizeHandler)
 })
@@ -1386,6 +1543,237 @@ onBeforeUnmount(() => {
   color: rgba(15, 23, 42, 0.6);
   text-align: center;
 }
+/* ── Sun Safety Knowledge Quiz ──────────────────────────────────────────── */
+.quiz-question {
+  border-radius: 14px;
+  border: 1.5px solid rgba(15, 23, 42, 0.08);
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  background: rgba(15, 23, 42, 0.015);
+  transition: border-color 0.15s;
+}
+
+.quiz-question--answered {
+  border-color: rgba(14, 165, 233, 0.3);
+}
+
+.quiz-q-text {
+  font-weight: 800;
+  font-size: 1rem;
+  margin-bottom: 10px;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  line-height: 1.45;
+}
+
+.quiz-q-num {
+  flex-shrink: 0;
+  font-size: 0.78rem;
+  font-weight: 900;
+  background: rgba(14, 165, 233, 0.12);
+  color: #0369a1;
+  border-radius: 6px;
+  padding: 2px 7px;
+  margin-top: 1px;
+}
+
+.quiz-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 7px;
+}
+
+.quiz-opt {
+  border: 1.5px solid rgba(15, 23, 42, 0.12);
+  border-radius: 10px;
+  padding: 8px 10px;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.88rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.quiz-opt:hover {
+  border-color: #0ea5e9;
+  background: rgba(14, 165, 233, 0.06);
+}
+
+.quiz-opt--selected {
+  border-color: #0ea5e9;
+  background: rgba(14, 165, 233, 0.12);
+  color: #0369a1;
+}
+
+.quiz-opt-letter {
+  flex-shrink: 0;
+  font-size: 0.78rem;
+  font-weight: 900;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quiz-opt--selected .quiz-opt-letter {
+  background: #0ea5e9;
+  color: #fff;
+}
+
+.quiz-submit-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.quiz-answered-count {
+  font-size: 0.88rem;
+  color: rgba(15, 23, 42, 0.6);
+  font-weight: 700;
+}
+
+.quiz-submit-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 24px;
+  font-weight: 800;
+  font-size: 0.95rem;
+  background: #0ea5e9;
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.quiz-submit-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.quiz-results {
+  display: grid;
+  gap: 16px;
+}
+
+.quiz-score-banner {
+  border-radius: 16px;
+  padding: 18px 20px;
+  text-align: center;
+  border: 1.5px solid transparent;
+}
+
+.quiz-score--great {
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.quiz-score--ok {
+  background: rgba(234, 179, 8, 0.12);
+  border-color: rgba(234, 179, 8, 0.3);
+}
+
+.quiz-score--low {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+.quiz-score-num {
+  font-size: 2.2rem;
+  font-weight: 900;
+}
+
+.quiz-score-label {
+  margin-top: 4px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: rgba(15, 23, 42, 0.75);
+}
+
+.quiz-review {
+  display: grid;
+  gap: 10px;
+}
+
+.quiz-review-item {
+  border-radius: 12px;
+  padding: 12px 14px;
+  border: 1px solid transparent;
+}
+
+.quiz-review--correct {
+  background: rgba(34, 197, 94, 0.06);
+  border-color: rgba(34, 197, 94, 0.2);
+}
+
+.quiz-review--wrong {
+  background: rgba(239, 68, 68, 0.06);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.quiz-review-q {
+  font-weight: 700;
+  font-size: 0.92rem;
+  display: flex;
+  gap: 7px;
+  align-items: flex-start;
+}
+
+.quiz-review-icon {
+  flex-shrink: 0;
+}
+
+.quiz-review-ans {
+  margin-top: 5px;
+  font-size: 0.85rem;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.quiz-your-ans {
+  color: #b91c1c;
+  font-weight: 700;
+}
+
+.quiz-correct-ans {
+  color: #15803d;
+  font-weight: 700;
+}
+
+.quiz-explanation {
+  margin-top: 7px;
+  font-size: 0.86rem;
+  color: rgba(15, 23, 42, 0.7);
+  line-height: 1.5;
+  border-left: 3px solid rgba(15, 23, 42, 0.12);
+  padding-left: 10px;
+}
+
+.quiz-retry-btn {
+  border: 1.5px solid rgba(15, 23, 42, 0.15);
+  border-radius: 10px;
+  padding: 9px 22px;
+  font-weight: 800;
+  font-size: 0.92rem;
+  background: #fff;
+  cursor: pointer;
+  width: fit-content;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.quiz-retry-btn:hover {
+  border-color: #0ea5e9;
+  background: rgba(14, 165, 233, 0.06);
+}
+
 /* ─────────────────────────────────────────────────────────────────────── */
 
 @media (max-width: 840px) {
@@ -1400,6 +1788,14 @@ onBeforeUnmount(() => {
   }
   .suncheck-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+  .quiz-options {
+    grid-template-columns: 1fr;
+  }
+  .quiz-submit-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
   }
 }
 </style>
