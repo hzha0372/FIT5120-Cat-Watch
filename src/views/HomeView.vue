@@ -713,7 +713,23 @@ onBeforeUnmount(() => {
 
 .card-title {
   margin: 0;
-  font-size: 1.15rem;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #0f172a;
+  position: relative;
+  padding-left: 12px;
+}
+
+.card-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.2em;
+  width: 4px;
+  height: 1.1em;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #60a5fa, #a78bfa);
 }
 
 .card-caption {
@@ -846,7 +862,7 @@ onBeforeUnmount(() => {
   border-radius: 14px;
   padding: 12px;
   border: 1px solid rgba(15, 23, 42, 0.08);
-  background: rgba(15, 23, 42, 0.02);
+  background: linear-gradient(135deg, rgba(219, 234, 254, 0.6), rgba(226, 255, 248, 0.6));
 }
 
 .sunscreen-label {
@@ -931,7 +947,7 @@ onBeforeUnmount(() => {
   padding: 7px 14px;
   border-radius: 10px;
   border: 1.5px solid rgba(15, 23, 42, 0.14);
-  background: #fff;
+  background: rgba(239, 246, 255, 0.9);
   cursor: pointer;
   font-weight: 700;
   transition: border-color 0.15s, background 0.15s;
@@ -968,7 +984,7 @@ onBeforeUnmount(() => {
 .reminder-info-box {
   border-radius: 10px;
   padding: 10px 12px;
-  background: #fff;
+  background: rgba(239, 246, 255, 0.9);
   border: 1px solid rgba(15, 23, 42, 0.1);
 }
 
@@ -986,7 +1002,7 @@ onBeforeUnmount(() => {
 .reminder-countdown-box {
   text-align: center;
   padding: 10px 16px;
-  background: #fff;
+  background: rgba(239, 246, 255, 0.9);
   border-radius: 10px;
   border: 1px solid rgba(15, 23, 42, 0.1);
 }
@@ -1077,7 +1093,7 @@ onBeforeUnmount(() => {
   border-radius: 14px;
   border: 1px solid rgba(15, 23, 42, 0.12);
   overflow: hidden;
-  background: #ffffff;
+  background: rgba(248, 250, 255, 0.95);
 }
 
 .uv-table__header,
@@ -1090,7 +1106,7 @@ onBeforeUnmount(() => {
 }
 
 .uv-table__header {
-  background: rgba(15, 23, 42, 0.04);
+  background: rgba(219, 234, 254, 0.45);
   font-weight: 800;
   color: rgba(15, 23, 42, 0.85);
   border-bottom: 1px solid rgba(15, 23, 42, 0.12);
@@ -1130,7 +1146,7 @@ onBeforeUnmount(() => {
 .qa-item {
   border-radius: 14px;
   border: 1px solid rgba(15, 23, 42, 0.10);
-  background: rgba(15, 23, 42, 0.02);
+  background: #eaf6ff;
   padding: 10px 12px;
 }
 
@@ -1214,5 +1230,3 @@ onBeforeUnmount(() => {
   }
 }
 </style>
-
-
