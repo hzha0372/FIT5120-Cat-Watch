@@ -885,15 +885,15 @@ const videos = ref([
   },
   {
     title: 'How to apply sunscreen correctly',
-    url: 'https://www.youtube.com/watch?v=bVx0QOF7B3g',
-    thumb: 'https://img.youtube.com/vi/bVx0QOF7B3g/hqdefault.jpg',
-    desc: 'Step-by-step guide to applying sunscreen for maximum protection.',
+    url: 'https://www.youtube.com/watch?v=6fX-1T7VCGw',
+    thumb: 'https://img.youtube.com/vi/6fX-1T7VCGw/hqdefault.jpg',
+    desc: 'Cancer Council campaign reminder to step up sun protection habits.',
   },
   {
     title: 'Understanding the UV Index',
-    url: 'https://www.youtube.com/watch?v=IlQCHQYpEtA',
-    thumb: 'https://img.youtube.com/vi/IlQCHQYpEtA/hqdefault.jpg',
-    desc: 'What the UV Index number means and how to act on it each day.',
+    url: 'https://www.youtube.com/watch?v=vt5vKL8ttJM',
+    thumb: 'https://img.youtube.com/vi/vt5vKL8ttJM/hqdefault.jpg',
+    desc: 'Cancer Council SunSmart Schools program on protecting children from UV.',
   },
 ])
 
@@ -929,10 +929,10 @@ const articles = ref([
     desc: 'How the UV Index is measured in Australia, what the numbers mean, and how to use UV alerts in daily life.',
   },
   {
-    org: 'Skin Cancer Foundation',
-    title: 'Ask the Expert: Can I get Vitamin D from the sun safely?',
-    url: 'https://www.skincancer.org/blog/ask-the-expert-can-i-get-my-vitamin-d-and-still-protect-myself-from-skin-cancer/',
-    desc: 'Dermatologists answer the Vitamin D vs sunscreen debate with scientific evidence.',
+    org: 'Cancer Council',
+    title: 'Does vitamin D protect against cancer?',
+    url: 'https://www.cancer.org.au/iheard/does-vitamin-d-protect-against-cancer',
+    desc: 'Evidence-based guidance on vitamin D, sun exposure, and balancing protection with health needs.',
   },
 ])
 
