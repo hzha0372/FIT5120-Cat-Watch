@@ -81,6 +81,19 @@ const dedupeById = (items) => {
   })
 }
 
+const dedupeByNameCountry = (items) => {
+  const seen = new Set()
+  return items.filter((item) => {
+    const nameKey = normalizeText(item?.name)
+    const countryKey = normalizeText(item?._country)
+    if (!nameKey) return false
+    const key = `${nameKey}::${countryKey}`
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+}
+
 const mapOpenWeatherResults = (items) =>
   (Array.isArray(items) ? items : [])
     .filter((item) => typeof item?.lat === 'number' && typeof item?.lon === 'number')
@@ -226,7 +239,7 @@ const rankNumericByQuery = (items, q) => {
   const normalizedQuery = normalizeText(q)
   if (!normalizedQuery) return items
 
-  return [...items]
+  const ranked = [...items]
     .map((item) => {
       const nameNorm = normalizeText(item.name)
       const metaNorm = normalizeText(item.meta)
@@ -249,6 +262,9 @@ const rankNumericByQuery = (items, q) => {
     .filter(({ score }) => score > 0)
     .sort((a, b) => b.score - a.score)
     .map(({ item }) => item)
+    .filter((item) => item && item.name)
+
+  return dedupeByNameCountry(ranked)
 }
 
 const buildRelaxedQuery = (q) => {
@@ -306,7 +322,7 @@ const rankByQuery = (items, q, options = {}) => {
   if (!normalizedQuery) return items
   const preferAustralianSuburb = Boolean(options.preferAustralianSuburb)
 
-  return [...items]
+  const ranked = [...items]
     .map((item) => {
       const nameNorm = normalizeText(item.name)
       const metaNorm = normalizeText(item.meta)
@@ -335,6 +351,8 @@ const rankByQuery = (items, q, options = {}) => {
     .filter(({ score }) => score > 0)
     .sort((a, b) => b.score - a.score)
     .map(({ item }) => item)
+
+  return dedupeByNameCountry(ranked)
 }
 
 export default async function handler(req, res) {
