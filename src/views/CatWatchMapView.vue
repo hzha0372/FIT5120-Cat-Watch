@@ -37,7 +37,7 @@ const legendItems = [
   { key: 'amber', label: 'Vulnerable' },
   { key: 'green', label: 'Listed' },
 ]
-const activeRiskFilter = ref('all')
+const activeRiskFilter = ref('red')
 const filteredSpeciesList = computed(() => {
   const list = mapData.value?.species || []
   if (activeRiskFilter.value === 'all') return list
@@ -598,6 +598,40 @@ onUnmounted(() => {
           <em>5km</em>
           <small>{{ totalSpeciesCount }} native records found</small>
         </div>
+        <div class="risk-filter-bar">
+          <button
+            type="button"
+            class="risk-filter-btn high"
+            :class="{ active: activeRiskFilter === 'red' }"
+            @click="setRiskFilter('red')"
+          >
+            High Risk
+          </button>
+          <button
+            type="button"
+            class="risk-filter-btn medium"
+            :class="{ active: activeRiskFilter === 'amber' }"
+            @click="setRiskFilter('amber')"
+          >
+            Medium Risk
+          </button>
+          <button
+            type="button"
+            class="risk-filter-btn low"
+            :class="{ active: activeRiskFilter === 'green' }"
+            @click="setRiskFilter('green')"
+          >
+            Low Risk
+          </button>
+          <button
+            type="button"
+            class="risk-filter-btn"
+            :class="{ active: activeRiskFilter === 'all' }"
+            @click="setRiskFilter('all')"
+          >
+            All
+          </button>
+        </div>
         <span class="risk-pill">{{ highRiskText }}</span>
       </div>
 
@@ -613,40 +647,6 @@ onUnmounted(() => {
             <span v-for="item in legendItems" :key="item.key" class="legend-item">
               <i :style="{ backgroundColor: statusColor[item.key] }" />{{ item.label }}
             </span>
-            <div class="risk-filter-bar">
-              <button
-                type="button"
-                class="risk-filter-btn"
-                :class="{ active: activeRiskFilter === 'all' }"
-                @click="setRiskFilter('all')"
-              >
-                All
-              </button>
-              <button
-                type="button"
-                class="risk-filter-btn high"
-                :class="{ active: activeRiskFilter === 'red' }"
-                @click="setRiskFilter('red')"
-              >
-                High Risk
-              </button>
-              <button
-                type="button"
-                class="risk-filter-btn medium"
-                :class="{ active: activeRiskFilter === 'amber' }"
-                @click="setRiskFilter('amber')"
-              >
-                Medium Risk
-              </button>
-              <button
-                type="button"
-                class="risk-filter-btn low"
-                :class="{ active: activeRiskFilter === 'green' }"
-                @click="setRiskFilter('green')"
-              >
-                Low Risk
-              </button>
-            </div>
             <label class="reserve-switch">
               <input v-model="showReserves" type="checkbox" />
               <span>Reserves</span>
@@ -1037,10 +1037,13 @@ onUnmounted(() => {
 }
 
 .risk-filter-bar {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 8px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  justify-content: center;
+  overflow-x: auto;
+  padding: 0 8px;
 }
 
 .risk-filter-btn {
@@ -1053,6 +1056,8 @@ onUnmounted(() => {
   font-size: 0.95rem;
   font-weight: 800;
   cursor: pointer;
+  white-space: nowrap;
+  flex: 0 0 auto;
 }
 
 .risk-filter-btn.active {
