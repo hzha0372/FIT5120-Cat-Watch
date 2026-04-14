@@ -49,7 +49,7 @@ const route = useRoute()
   position: sticky;
   top: 0;
   z-index: 900;
-  padding: 10px 14px;
+  padding: 12px 16px;
   border-bottom: 1px solid #cad2c8;
   background: rgba(244, 247, 243, 0.95);
   backdrop-filter: blur(6px);
@@ -58,28 +58,29 @@ const route = useRoute()
 .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 14px;
 }
 
 .brand img {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
+  width: 88px;
+  height: 88px;
+  border-radius: 16px;
   object-fit: cover;
   border: 1px solid #c5cec3;
 }
 
 .brand-text h1 {
-  font-size: 1.25rem;
+  font-size: 3rem;
   line-height: 1;
   font-weight: 800;
   color: #133a29;
 }
 
 .brand-text p {
-  margin-top: 3px;
+  margin-top: 8px;
   color: #557061;
-  font-size: 0.9rem;
+  font-size: 1.15rem;
+  font-weight: 600;
 }
 
 .top-nav {
@@ -103,5 +104,21 @@ const route = useRoute()
   color: #f5faf6;
   border-color: #1d4c34;
   background: #1d4c34;
+}
+
+@media (max-width: 700px) {
+  .brand img {
+    width: 68px;
+    height: 68px;
+    border-radius: 12px;
+  }
+
+  .brand-text h1 {
+    font-size: 2.3rem;
+  }
+
+  .brand-text p {
+    font-size: 1rem;
+  }
 }
 </style>

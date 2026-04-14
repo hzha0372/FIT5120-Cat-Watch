@@ -37,6 +37,12 @@ const legendItems = [
   { key: 'amber', label: 'Vulnerable' },
   { key: 'green', label: 'Listed' },
 ]
+const activeRiskFilter = ref('all')
+const filteredSpeciesList = computed(() => {
+  const list = mapData.value?.species || []
+  if (activeRiskFilter.value === 'all') return list
+  return list.filter((species) => species.riskLevel === activeRiskFilter.value)
+})
 
 const summaryText = computed(() => {
   if (!mapData.value?.summary) return '0 threatened species within 5km'
@@ -164,6 +170,14 @@ const clearLayers = () => {
   if (reserveLayer.value) reserveLayer.value.clearLayers()
 }
 
+const setRiskFilter = (level) => {
+  activeRiskFilter.value = level
+  if (selectedSpecies.value && level !== 'all' && selectedSpecies.value.riskLevel !== level) {
+    selectedSpecies.value = null
+  }
+  renderSpecies()
+}
+
 const seededUnit = (text) => {
   const s = String(text || '')
   let h = 2166136261
@@ -257,7 +271,7 @@ const renderSpecies = () => {
   const bounds = []
   speciesLayer.value.clearLayers()
 
-  const displayPoints = buildDisplayPoints(mapData.value.species || [])
+  const displayPoints = buildDisplayPoints(filteredSpeciesList.value)
 
   for (const point of displayPoints) {
     const { species } = point
@@ -599,6 +613,40 @@ onUnmounted(() => {
             <span v-for="item in legendItems" :key="item.key" class="legend-item">
               <i :style="{ backgroundColor: statusColor[item.key] }" />{{ item.label }}
             </span>
+            <div class="risk-filter-bar">
+              <button
+                type="button"
+                class="risk-filter-btn"
+                :class="{ active: activeRiskFilter === 'all' }"
+                @click="setRiskFilter('all')"
+              >
+                All
+              </button>
+              <button
+                type="button"
+                class="risk-filter-btn high"
+                :class="{ active: activeRiskFilter === 'red' }"
+                @click="setRiskFilter('red')"
+              >
+                High Risk
+              </button>
+              <button
+                type="button"
+                class="risk-filter-btn medium"
+                :class="{ active: activeRiskFilter === 'amber' }"
+                @click="setRiskFilter('amber')"
+              >
+                Medium Risk
+              </button>
+              <button
+                type="button"
+                class="risk-filter-btn low"
+                :class="{ active: activeRiskFilter === 'green' }"
+                @click="setRiskFilter('green')"
+              >
+                Low Risk
+              </button>
+            </div>
             <label class="reserve-switch">
               <input v-model="showReserves" type="checkbox" />
               <span>Reserves</span>
@@ -986,6 +1034,49 @@ onUnmounted(() => {
   width: 10px;
   height: 10px;
   border-radius: 50%;
+}
+
+.risk-filter-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.risk-filter-btn {
+  border: 2px solid #bac5be;
+  background: #f4f7f4;
+  color: #435049;
+  border-radius: 999px;
+  min-height: 36px;
+  padding: 6px 14px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.risk-filter-btn.active {
+  border-color: #1d4c34;
+  background: #dff0e2;
+  color: #1d4c34;
+}
+
+.risk-filter-btn.high.active {
+  border-color: #db8484;
+  background: #fde8e8;
+  color: #9e2f2f;
+}
+
+.risk-filter-btn.medium.active {
+  border-color: #e7be76;
+  background: #fff0d5;
+  color: #87550c;
+}
+
+.risk-filter-btn.low.active {
+  border-color: #a8c990;
+  background: #eaf6e4;
+  color: #3e6d31;
 }
 
 .reserve-switch {
