@@ -17,7 +17,7 @@ const route = useRoute()
           @error="logoMissing = true"
         />
         <div class="brand-text">
-          <h1>Cat Watch</h1>
+          <h1>CAT WATCH</h1>
           <p>Protecting Wildlife, Responsible Pet Ownership</p>
         </div>
       </div>
