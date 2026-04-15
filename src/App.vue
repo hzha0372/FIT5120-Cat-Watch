@@ -32,6 +32,13 @@ const route = useRoute()
         >
           Risk Map
         </RouterLink>
+        <RouterLink
+          to="/vision-mission"
+          class="nav-pill"
+          :class="{ active: route.path.startsWith('/vision-mission') }"
+        >
+          Vision & Mission
+        </RouterLink>
       </nav>
     </header>
 
