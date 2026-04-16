@@ -1,14 +1,24 @@
 <script setup>
-import { ref } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { computed, ref } from 'vue'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
+import { isAuthenticated, logout } from './utils/auth'
 
 const logoMissing = ref(false)
 const route = useRoute()
+const router = useRouter()
+
+const isLoginPage = computed(() => route.path === '/login')
+const showAppChrome = computed(() => !isLoginPage.value && isAuthenticated())
+
+const handleLogout = () => {
+  logout()
+  router.replace('/login')
+}
 </script>
 
 <template>
   <div class="app-shell">
-    <header class="app-header">
+    <header v-if="showAppChrome" class="app-header">
       <div class="header-inner">
         <div class="brand">
           <img
@@ -47,6 +57,7 @@ const route = useRoute()
           >
             Our Mission
           </RouterLink>
+          <button class="logout-btn" type="button" @click="handleLogout">Logout</button>
         </nav>
       </div>
     </header>
@@ -115,6 +126,22 @@ const route = useRoute()
   gap: 8px;
   flex-wrap: wrap;
   justify-content: flex-end;
+}
+
+.logout-btn {
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: #3d5d4f;
+  font-weight: 700;
+  font-size: 1.08rem;
+  padding: 7px 12px;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  border-color: #bfd0c1;
+  background: #ecf2ec;
 }
 
 .nav-pill {
